@@ -1,0 +1,27 @@
+﻿@model List<Movie>
+<div class="container">
+   
+    <div class="row">
+
+        @if(Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-4">
+                    <div class="card" style="width: 18rem;">
+                        <img src="/images/movies/@item.Images?.FirstOrDefault()?.ImageUrl" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title"> Name Movie :@item.Name</h5>
+                            <p class="card-text"> Categery :@item.Category.Name</p>
+                            <p class="card-text"> Cinema :@item.Cinema.Name</p>
+                            <p class="card-text"> Date :@item.StartDate</p>
+                              
+
+                            <a asp-area="movies" asp-controller="home" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

@@ -1,0 +1,11 @@
+﻿namespace E_ticket.Models
+{
+    public class ActorMovie
+    {
+        public int Id { get; set; }
+        public int ActorId { get; set; }
+        public int MovieId { get; set; }
+        public Movie Movie { get; set; } = null!;
+        public Actor Actor { get; set; } = null!;
+    }
+}
