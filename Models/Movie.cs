@@ -18,8 +18,8 @@ namespace E_ticket.Models
         public int CinemaId { get; set; }
         [Display(Name = "Category")]
         public int CategoryId { get; set; }
-        public Cinema Cinema { get; set; } = new Cinema();
-        public Category Category { get; set; } = new Category();
+        public Cinema Cinema { get; set; }
+        public Category Category { get; set; }
 
         public ICollection<ActorMovie> actorsMovies { get; set; } = new List<ActorMovie>();
     }

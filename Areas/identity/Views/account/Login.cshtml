@@ -1,0 +1,54 @@
+﻿@model E_ticket.Models.viewmodel.Loginvm
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+
+<div class="container">
+    <h1>Login</h1>
+
+    <h4>Loginvm</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Login">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="NameOrEmail" class="control-label"></label>
+                    <input asp-for="NameOrEmail" class="form-control" />
+                    <span asp-validation-for="NameOrEmail" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="Remmeberme" /> @Html.DisplayNameFor(model => model.Remmeberme)
+                    </label>
+                </div>
+                <div class="form-group mt-4">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+        <partial name="_ExternalAuthentication" />
+
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+
+    </div>
+    <div>
+        <a asp-area="identity" asp-controller="account" asp-action="ResendEmailConfrimation">Resend Email or name Confrimation</a>
+    </div>
+    <div>
+        <a asp-area="identity" asp-controller="account" asp-action="ForgerPassword">Forger Password</a>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -49,7 +49,7 @@ namespace E_ticket.Areas.admin.Controllers
         [HttpPost]
         public IActionResult Create(Movie movie, List<int> ActorsId, List<IFormFile> imgs)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var categore = _dbContext.Categories.Select(e => new SelectListItem()
                 {
