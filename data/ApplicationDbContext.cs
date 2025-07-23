@@ -19,6 +19,9 @@ namespace E_ticket.data
         public DbSet<ActorMovie> ActorsMovies { get; set; }
         public DbSet<MovieImage> Images { get; set; }
         public DbSet<UserOtp> userOtps { get; set; }
+        public DbSet<MoviesUserTicket> moviesUserTickets { get; set; }
+        public DbSet<Ticket> tickets { get; set; }
+        public DbSet<TicketItme>ticketItmes { get; set; }
     
       
       

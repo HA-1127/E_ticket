@@ -4,6 +4,7 @@ using E_ticket.data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_ticket.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250717072438_addmoviesuser")]
+    partial class addmoviesuser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -285,72 +288,6 @@ namespace E_ticket.Migrations
                     b.ToTable("moviesUserTickets");
                 });
 
-            modelBuilder.Entity("E_ticket.Models.Ticket", b =>
-                {
-                    b.Property<int>("IdApplicationUser")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdApplicationUser"));
-
-                    b.Property<int?>("Carrier")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CarrierId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SessionId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TotalPrice")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("TransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("applicationuserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("paymenMethod")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ticketStatus")
-                        .HasColumnType("int");
-
-                    b.HasKey("IdApplicationUser");
-
-                    b.HasIndex("applicationuserId");
-
-                    b.ToTable("tickets");
-                });
-
-            modelBuilder.Entity("E_ticket.Models.TicketItme", b =>
-                {
-                    b.Property<int>("TicketId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Quantity")
-                        .HasColumnType("float");
-
-                    b.HasKey("TicketId", "MovieId");
-
-                    b.HasIndex("MovieId");
-
-                    b.ToTable("ticketItmes");
-                });
-
             modelBuilder.Entity("E_ticket.Models.UserOtp", b =>
                 {
                     b.Property<int>("id")
@@ -583,34 +520,6 @@ namespace E_ticket.Migrations
                     b.Navigation("applicationUser");
 
                     b.Navigation("movie");
-                });
-
-            modelBuilder.Entity("E_ticket.Models.Ticket", b =>
-                {
-                    b.HasOne("E_ticket.Models.ApplicationUser", "applicationuser")
-                        .WithMany()
-                        .HasForeignKey("applicationuserId");
-
-                    b.Navigation("applicationuser");
-                });
-
-            modelBuilder.Entity("E_ticket.Models.TicketItme", b =>
-                {
-                    b.HasOne("E_ticket.Models.Movie", "movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("E_ticket.Models.Ticket", "ticket")
-                        .WithMany()
-                        .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("movie");
-
-                    b.Navigation("ticket");
                 });
 
             modelBuilder.Entity("E_ticket.Models.UserOtp", b =>

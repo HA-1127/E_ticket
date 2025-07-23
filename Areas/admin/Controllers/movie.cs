@@ -11,6 +11,9 @@ namespace E_ticket.Areas.admin.Controllers
     public class movie : Controller
     {
         private ApplicationDbContext _dbContext = new();
+
+        public int Id { get; internal set; }
+
         public IActionResult Index()
         {
             var movies = _dbContext.Movies.Include(e => e.Cinema).Include(e => e.Category).Include(e => e.Images).Include(e => e.actorsMovies);
