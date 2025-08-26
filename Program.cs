@@ -27,7 +27,12 @@ namespace E_ticket
             Option=>Option.UseSqlServer(builder.Configuration.GetConnectionString("detualtconnection"))
                 );
             //add identity
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
+            {
+                option.SignIn.RequireConfirmedEmail = true;
+                
+            }
+                )
                 .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             // add login google
             builder.Services.AddAuthentication()
@@ -46,7 +51,11 @@ namespace E_ticket
             });
 
 
-
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/identity/account/Login";
+                options.AccessDeniedPath = "/Identity/account/AccessDenied";
+            });
             // email sender
             builder.Services.AddTransient<IEmailSender, EmailSend>();
             //reopseitory
@@ -56,11 +65,16 @@ namespace E_ticket
             builder.Services.AddScoped<IRuserotprepostoity, RuserotpRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
             builder.Services.AddScoped<ITicketItemRepository, TicketItemRepository>();
+            builder.Services.AddScoped<Iactoryrepository, ActoryRepository>();
+            builder.Services.AddScoped<IcinemaRepository, CineamRepository>();
+
             builder.Services.AddScoped<IMoviesUserTicketRepositiriy, MoviesUserTicketReopsitoriy>();
             builder.Services.AddScoped<IDBinitiaitizer, DBinitializer>();
-            builder.Services.AddScoped<IUntiOfWorkeRepositery, UnitOfWorkRepository>();
-            // stipe
-           // builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+           // builder.Services.AddScoped<IUntiOfWorkeRepositery, UnitOfWorkRepository>();
+          
+
+
+          // Stripe
             StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 

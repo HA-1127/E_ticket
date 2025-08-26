@@ -39,7 +39,7 @@ namespace E_ticket.utiltiy.Bbinitializer
                     _userManager.CreateAsync(new()
                     {
                         UserName = "SuperAdmin",
-                        Email = "SuperAdmin@eraasoft.com",
+                        Email = "hsn768972@gmail.com",
                         FirstName = "Super",
                         LastName = "Admin",
                         EmailConfirmed = true

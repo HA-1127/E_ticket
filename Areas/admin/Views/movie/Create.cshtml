@@ -7,62 +7,68 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="container">
 
-<h4>Movie</h4>
-<hr />
-<div class="row">
-    <div class="col-md-12">
-        <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Movie.Name" class="control-label"></label>
-                <input asp-for="Movie.Name" class="form-control" />
-                <span asp-validation-for="Movie.Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Movie.Description" class="control-label"></label>
-                <input asp-for="Movie.Description" class="form-control" />
-                <span asp-validation-for="Movie.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Movie.Price" class="control-label"></label>
-                <input asp-for="Movie.Price" class="form-control" />
-                <span asp-validation-for="Movie.Price" class="text-danger"></span>
-            </div>
+    <h1>Create</h1>
 
-            <div class="form-group">
-                <label asp-for="Movie.StartDate" class="control-label"></label>
-                <input asp-for="Movie.StartDate" class="form-control" />
-                <span asp-validation-for="Movie.StartDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Movie.Images" class="control-label"></label>
-                <input name="imgs" type="file" multiple class="form-control" />
-                <span asp-validation-for="Movie.Images" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Movie.CinemaId" class="control-label"></label>
-                <select asp-for="Movie.CinemaId" asp-items="Model.cinemas" class="form-control">
-                    
-                </select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Movie.CategoryId" class="control-label"> </label>
-                <select asp-for="Movie.CategoryId" class="form-control" asp-items="Model.categories"></select>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Actors</label>
-              
-                <select name="ActorsId" multiple class="form-control" asp-items="Model.actors"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+    <h4>Movie</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Movie.Name" class="control-label"></label>
+                    <input asp-for="Movie.Name" class="form-control" />
+                    <span asp-validation-for="Movie.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Movie.Description" class="control-label"></label>
+                    <input asp-for="Movie.Description" class="form-control" />
+                    <span asp-validation-for="Movie.Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Movie.Price" class="control-label"></label>
+                    <input asp-for="Movie.Price" class="form-control" />
+                    <span asp-validation-for="Movie.Price" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Movie.StartDate" class="control-label"></label>
+                    <input asp-for="Movie.StartDate" class="form-control" />
+                    <span asp-validation-for="Movie.StartDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Movie.Images" class="control-label"></label>
+                    <input name="imgs" type="file" multiple class="form-control" />
+                    <span asp-validation-for="Movie.Images" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Movie.CinemaId" class="control-label"></label>
+                    <select asp-for="Movie.CinemaId" asp-items="Model.cinemas" class="form-control">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Movie.CategoryId" class="control-label"> </label>
+                    <select asp-for="Movie.CategoryId" class="form-control" asp-items="Model.categories">
+                        <option value="0">name categories</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Actors</label>
+
+                    <select name="ActorsId" multiple class="form-control" asp-items="Model.actors">
+                        <option value="0">actore</option>
+                    </select>
+                </div>
+                <div class="form-group mt-4">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
+</div>
 
 
 

@@ -1,0 +1,200 @@
+﻿@using E_ticket.Models.viewmodel
+@model List<UserOrRoleVM>
+@{
+    ViewData["Title"] = "Index";
+}
+@section Scripts {
+<partial name="_notifecation.cshtml" />
+}
+
+<!-- Filter Section -->
+<section class="py-3 filter-bar">
+    <div class="container">
+        <div class="row" style="background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;">
+            <div class="col-12">
+
+                <form method="get" class="row g-3 mb-3">
+                    
+                   
+                    <div class="col-md-2">
+                     
+                        <select name="Roles" class="form-select">
+                            <option value="">-- roles --</option>
+                            @foreach (var item in ViewBag.roles)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+
+
+                    <div class="col-md-2">
+
+                        <input type="text" name="FristName" class="form-control" placeholder="Frist Name" />
+					</div>
+                    <div class="col-md-2">
+
+                        <input type="text" name="LastName" class="form-control" placeholder="Last Name" />
+                    </div>
+                    <div class="col-md-2">
+                      
+                        <input type="tel" name="UserName" class="form-control" placeholder="user name" />
+                    </div>
+
+                    <div class="col-md-1">
+                      
+
+                        <input type="text" name="Email" class="form-control" placeholder="Email"  />
+                    </div>
+                  
+                    <div class="col-md-2">
+                       
+
+                        <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class="container">
+    <div class="row mb-3 align-items-center my-3">
+        <div class="col-md-6">
+            <h2 class="display-6">All User</h2>
+        </div>
+        <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
+            <a href="/admin/User/Create" class="btn btn-success">Create</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">full Name</th>
+                        <th scope="col">email</th>
+                        <th scope="col">user name</th>
+                        <th scope="col">role</th>
+                        <th scope="col">Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th scope="row">@(item.Id)</th>
+                            <td>@item.FullName</td>
+                            <td>@item.Email</td>
+                            <td>@item.UserName</td>
+                            <td>@string.Join(" ,", item.Roles)</td>
+                            <td>
+                                @(item.islocked ? "locked" : "unlocked")
+                            </td>
+
+                            <td>
+                                <a href="/admin/User/Edit/@item.Id" type="button" class="btn btn-warning">Edit</a>
+                                <a href="/admin/User/Delete/@item.Id"
+                                   class="btn btn-danger btn-delete"
+                                   data-id="@item.Id">Delete</a>
+                                <a href="/admin/User/Details/@item.Id" class="btn btn-info btn-sm">Details</a>
+                                <a href="/admin/User/LockedUNlocked/@item.Id" class="btn btn-info btn-sm">@(item.islocked ? "unlocked" : "locked")</a>
+
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const deleteUrl = this.getAttribute('href');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    });
+</script>
+@* //pagination *@
+<div class="row">
+    <div class="col-12 d-flex justify-content-center">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if (ViewBag.currentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-frisname="@ViewBag.fristName"
+                           asp-route-lastname="@ViewBag.lastName"
+                           asp-route-usename="@ViewBag.username"
+                           asp-route-email="@ViewBag.email"
+                           asp-route-roles="@ViewBag.roles"
+                           asp-route-page="@(ViewBag.currentPage-1)"
+                           })">Previous</a>
+                    </li>
+                }
+                @for (var i = 1; i <= ViewBag.totallUnmberofPage; i++)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-frisname="@ViewBag.fristName"
+                           asp-route-lastname="@ViewBag.lastName"
+                           asp-route-usename="@ViewBag.username"
+                           asp-route-email="@ViewBag.email"
+                           asp-route-roles="@ViewBag.roles"
+                           asp-route-page="@i"
+                           })">@i</a>
+                    </li>
+                }
+                @if (ViewBag.currentPage != ViewBag.totallUnmberofPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-frisname="@ViewBag.fristName"
+                           asp-route-lastname="@ViewBag.lastName"
+                           asp-route-usename="@ViewBag.username"
+                           asp-route-email="@ViewBag.email"
+                           asp-route-roles="@ViewBag.roles"
+                           asp-route-page="@(ViewBag.currentPage+1)"
+                           })">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+
+
+
+
+
+

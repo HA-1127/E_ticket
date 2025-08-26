@@ -25,6 +25,34 @@
             <a href="/admin/cinema/Create" class="btn btn-success">Create</a>
         </div>
     </div>
+    <!-- Filter Section -->
+    <section class="py-3 filter-bar">
+        <div class="container">
+            <div class="row" style="background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;">
+                <div class="col-12">
+                    <form>
+                        <div class="row">
+                            <!-- movies Name -->
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" placeholder="Cinema Name" name="CinemaName" value="@ViewBag.cinemaName">
+                            </div>
+
+                            <!--  Address -->
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" placeholder="Address" name="Address" value="@ViewBag.addresse">
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-dark w-100">Filter</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <div class="row">
         <div class="col-12">
@@ -72,6 +100,45 @@
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+      @*  pagination  *@
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-CineaName="@ViewBag.cinemaName"
+                               asp-route-address="@ViewBag.address"
+                               asp-route-page="@(ViewBag.CurrentPage-1)"
+                               })">Previous</a>
+                        </li>
+                    }
+                    @for (var i = 1; i <= ViewBag.TotallNumberOfPage; i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new {
+                                 CinemaName =ViewBag.cinemaName,
+                                MinPrice = ViewBag.address,
+                                page = i
+                                })">@i</a>
+                        </li>
+                    }
+                    @if (ViewBag.CurrentPage != ViewBag.TotallNumberOfPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-CineaName="@ViewBag.cinemaName"
+                               asp-route-address="@ViewBag.address"
+                               asp-route-page="@(ViewBag.CurrentPage+1)"
+                               })">Nexst</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
         </div>
     </div>
 </div>

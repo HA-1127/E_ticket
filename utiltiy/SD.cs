@@ -1,12 +1,14 @@
-﻿namespace E_ticket.utiltiy
+﻿using System.Reflection.Metadata;
+
+namespace E_ticket.utiltiy
 {
     public static class SD
     {
-        public static string SuperAdmin = "SuperAdmin";
-        public static string Admin = "Admin";
-        public static string Customer = "Customer";
-        public static string Employees = "Employess";
-        public static string Company = "Company";
+        public const string SuperAdmin = "SuperAdmin";
+        public const string Admin = "Admin";
+        public const string Customer = "Customer";
+        public const string Employees = "Employess";
+        public const string Company = "Company";
 
     }
 }

@@ -14,13 +14,17 @@ namespace E_ticket.utiltiy
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential("hsn768972@gmail.com", "fmvc gyjl rmsv rvqs")
             };
-
             return client.SendMailAsync(
-                new MailMessage(from: "hsn768972@gmail.com",
-                                to: email,
-                                subject,
-                                message
-                                ));
+                          new MailMessage(from: "hsn768972@gmail.com",
+                                          to: email,
+                                          subject,
+                                          message
+                                          )
+                          {
+                              IsBodyHtml = true
+                          });
+
+
         }
     }
 }

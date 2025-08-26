@@ -1,0 +1,237 @@
+﻿
+@model List<Ticket>
+
+@{
+    ViewData["Title"] = "Index";
+}
+@section Scripts {
+    <partial name="_notifecation.cshtml" />
+    }
+
+<!-- Filter Section -->
+<section class="py-4 filter-bar">
+    <div class="container">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body">
+                <h5 class="mb-4 fw-bold text-primary">
+                    <i class="bi bi-funnel"></i>
+                </h5>
+
+                <form method="get" class="row g-3">
+                    <!-- Status -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="ticketStatus" class="form-select">
+                            <option value="">-- Status --</option>
+                            @foreach (var item in Enum.GetValues(typeof(TicketStatus)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Payment -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Payment</label>
+                        <select name="paymenMethod" class="form-select">
+                            <option value="">-- Payment --</option>
+                            @foreach (var item in Enum.GetValues(typeof(PaymenMethod)))
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- User -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">User name</label>
+                        <input type="text" name="UserName" class="form-control" placeholder="User name" />
+
+                    </div>
+
+                    <!-- From Date -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">From Date</label>
+                        <input type="date" name="FromeDate" class="form-control" />
+                    </div>
+
+                    <!-- To Date -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">To Date</label>
+                        <input type="date" name="ToDate" class="form-control" />
+                    </div>
+
+                    <!-- Min Price -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Min Price</label>
+                        <input type="number" name="MinPrice" class="form-control" placeholder="Min $" />
+                    </div>
+
+                    <!-- Max Price -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Max Price</label>
+                        <input type="number" name="MaxPrice" class="form-control" placeholder="Max $" />
+                    </div>
+
+                    <!-- Filter Button -->
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class="container">
+    <div class="row mb-3 align-items-center my-3">
+        <div class="col-md-6">
+            <h2 class="display-6">All Tickets</h2>
+        </div>
+        <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
+            <a href="/Admin/Ticket/Create" class="btn btn-success">Create</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Date Time</th>
+                        <th scope="col">Paymen tMethod</th>
+                        <th scope="col">Total Price</th>
+                      
+                        <th scope="col">Status</th>
+                        <th scope="col"> User Name</th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th scope="row">@(item.Id)</th>
+                            <td>@item.DateTime</td>
+                            <td>@item.paymenMethod</td>
+                            <td>@item.TotalPrice</td>
+                     
+                            <td>@item.ticketStatus</td>
+                            <td>@item.applicationUser.UserName</td>
+
+
+                            <td>
+                                <a href="/Admin/Ticket/Edit/@item.Id" type="button" class="btn btn-warning">Edit</a>
+                                <a href="/Admin/Ticket/Delete/@item.Id"
+                                   class="btn btn-danger btn-delete"
+                                   data-id="@item.Id">Delete</a>
+                                <a href="/admin/Ticket/Details/@item.Id" class="btn btn-info btn-sm">Details</a>
+                                <a href="/admin/Ticket/Booked/@item.Id" class="btn btn-info btn-sm">Booked</a>
+                                <a href="/admin/Ticket/Pending/@item.Id" class="btn btn-info btn-sm">Pending</a>
+                                <a href="/admin/Ticket/Canceled/@item.Id" class="btn btn-info btn-sm">Canceled</a>
+
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@* //pagination *@
+<div class="row">
+    <div class="col-12 d-flex justify-content-center">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if (ViewBag.currentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-status="@ViewBag.status "
+                           asp-route-paymant="@ViewBag.payment"
+                           asp-route-MaxPrice="@ViewBag.Maxpric"
+                           asp-route-minprice="@ViewBag.minpeice"
+                           asp-route-fromdate="@ViewBag.fromdate"
+                           asp-route-todate="@ViewBag.todate"
+                           asp-route-username="@ViewBag.userName"
+                       
+                           asp-route-page="@(ViewBag.currentPage-1)"
+                           })">Previous</a>
+                    </li>
+                }
+                @for (var i = 1; i <= ViewBag.TotallNumberOfPage; i++)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-status="@ViewBag.status "
+                           asp-route-paymant="@ViewBag.payment"
+                           asp-route-MaxPrice="@ViewBag.Maxpric"
+                           asp-route-minprice="@ViewBag.minpeice"
+                           asp-route-fromdate="@ViewBag.fromdate"
+                           asp-route-todate="@ViewBag.todate"
+                           asp-route-username="@ViewBag.userName"
+                           
+                           asp-route-page="@i"
+                           })">@i</a>
+                    </li>
+                }
+                @if (ViewBag.currentPage != ViewBag.TotallNumberOfPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-statuse="@ViewBag.status "
+                           asp-route-payment="@ViewBag.payment"
+                           asp-route-MaxPrice="@ViewBag.Maxpric"
+                           asp-route-minprice="@ViewBag.minpeice"
+                           asp-route-formdate="@ViewBag.fromdate"
+                           asp-route-todate="@ViewBag.todate"
+                           asp-route-usernamw="@ViewBag.userName"
+                          
+                           asp-route-page="@(ViewBag.currentPage+1)"
+                           })">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const deleteUrl = this.getAttribute('href');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+
+
+

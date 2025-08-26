@@ -1,6 +1,8 @@
 ﻿using E_ticket.data;
 using E_ticket.Models;
 using E_ticket.Models.viewmodel;
+using E_ticket.utiltiy;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -8,15 +10,86 @@ using Microsoft.EntityFrameworkCore;
 namespace E_ticket.Areas.admin.Controllers
 {
     [Area("admin")]
+    [Authorize(Roles =$"{SD.SuperAdmin},{SD.Admin}")]
     public class movie : Controller
     {
         private ApplicationDbContext _dbContext = new();
 
-        public int Id { get; internal set; }
+      //  public int Id { get; internal set; }
 
-        public IActionResult Index()
+        public IActionResult Index(MoviesFiltersVM? moviesFiltersVM ,int page =1)
         {
-            var movies = _dbContext.Movies.Include(e => e.Cinema).Include(e => e.Category).Include(e => e.Images).Include(e => e.actorsMovies);
+            var movies = _dbContext.Movies
+                .Include(e => e.Cinema)
+                .Include(e => e.Category)
+                .Include(e => e.Images)
+                .Include(e => e.actorsMovies)
+                .ThenInclude(e=>e.Actor)
+                .ToList();
+            //filters
+          
+            var actor = _dbContext.Actors.ToList();
+            if (moviesFiltersVM.ActorId is not null)
+            {
+                if (moviesFiltersVM.ActorId > 0 && actor.Count() > moviesFiltersVM.ActorId)
+                {
+                    movies = movies.Where(e => e.actorsMovies.Any(e =>
+                    (e.Actor.Id) == moviesFiltersVM.ActorId)).ToList();
+                }
+                ViewBag.actorid = moviesFiltersVM.ActorId;
+            }
+            ViewBag.actor = actor;
+           
+            if (moviesFiltersVM.NameMovies is not null)
+            {
+                movies = movies.Where(e => e.Name.Contains(moviesFiltersVM.NameMovies)).ToList();
+                ViewBag.NameMovies = moviesFiltersVM.NameMovies;
+            }
+            if (moviesFiltersVM.MaxPrice is not null)
+            {
+                movies = movies.Where(e => e.Price <= moviesFiltersVM.MaxPrice).ToList();
+                ViewBag.MaxPrice = moviesFiltersVM.MaxPrice;
+            }
+            if (moviesFiltersVM.MinPrice is not null)
+            {
+                movies = movies.Where(e => e.Price >= moviesFiltersVM.MinPrice).ToList();
+                ViewBag.MinPrice = moviesFiltersVM.MinPrice;
+            }
+            var catogety = _dbContext.Categories.ToList();
+            if (moviesFiltersVM.CatogeryId is not null)
+            {
+                if (moviesFiltersVM.CatogeryId > 0 && catogety.Count() >= moviesFiltersVM.CatogeryId)
+                {
+                    movies = movies.Where(e => e.CategoryId == moviesFiltersVM.CatogeryId).ToList();
+                    ViewBag.catogeryId = moviesFiltersVM.CatogeryId;
+                }
+            }
+            var cinema = _dbContext.Cinemas.ToList();
+            if (moviesFiltersVM.CinemaId is not null)
+            {
+                if (moviesFiltersVM.CinemaId > 0 && cinema.Count() >= moviesFiltersVM.CinemaId)
+                {
+                    movies = movies.Where(e => e.CinemaId == moviesFiltersVM.CinemaId).ToList();
+                    ViewBag.cinemaId = moviesFiltersVM.CinemaId;
+                }
+            }
+            if (moviesFiltersVM.Stutas is not null)
+            {
+                movies = movies.Where(e => e.Status == moviesFiltersVM.Stutas).ToList();
+                ViewBag.stutas = moviesFiltersVM.Stutas;
+            }
+            //pagination
+            if (page < 0)
+            {
+                page = 1;
+            }
+            var TotallNumberOfPage = Math.Ceiling(movies.Count() / 10.0);
+            movies = movies.Skip((page - 1) * 10).Take(10).ToList();
+            ViewBag.TotallNumberOfPage = TotallNumberOfPage;
+            ViewBag.CurrenPage = page;
+
+            ViewBag.catogery = catogety;
+            ViewBag.cinema = cinema;
             return View(movies.ToList());
 
         }
@@ -94,7 +167,7 @@ namespace E_ticket.Areas.admin.Controllers
                     newImgs.Add(fileName);
                 }
                 _dbContext.Movies.Add(movie);
-               
+
                 _dbContext.SaveChanges();
                 if (ActorsId.Any())
                 {
@@ -110,12 +183,13 @@ namespace E_ticket.Areas.admin.Controllers
                         _dbContext.Images.Add(new() { ImageUrl = item, MovieId = movie.Id });
                     }
                 }
-              
+
                 _dbContext.SaveChanges();
                 TempData["successfull notification"] = "add successfull movies";
                 return RedirectToAction(nameof(Index));
 
             }
+
             return RedirectToAction(nameof(Index));
 
 
@@ -158,14 +232,14 @@ namespace E_ticket.Areas.admin.Controllers
 
         }
         [HttpPost]
-        public IActionResult Edit(Movie movie, List<int> ActorsId, List<IFormFile> imgs)
+        public IActionResult Edit(Movie movie, List<int> ActorsId, List<IFormFile>? imgs)
         {
 
             var oldImgs = _dbContext.Images.Where(e => e.MovieId == movie.Id).ToList();
 
             if (oldImgs is not null)
             {     // validation
-                if (!ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
                     var categore = _dbContext.Categories.Select(e => new SelectListItem()
                     {
@@ -196,7 +270,6 @@ namespace E_ticket.Areas.admin.Controllers
                 {
                     List<string> newImgs = new List<string>();
                     // delete old images 
-
 
                     foreach (var item in imgs)
                     {
@@ -260,7 +333,7 @@ namespace E_ticket.Areas.admin.Controllers
                 foreach (var item in oldImgs)
                 {
                     _dbContext.Remove(item);
-                    var pathimageold = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies", item.ImageUrl); 
+                    var pathimageold = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\images\\movies", item.ImageUrl.ToString()); 
                     if (System.IO.File.Exists(pathimageold))
                     {
                         System.IO.File.Delete(pathimageold);

@@ -36,5 +36,6 @@ namespace E_ticket.data
             optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=E-ticket514;Integrated Security=True;Trust Server Certificate=True");
         }
         
+        
     }
 }

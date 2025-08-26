@@ -15,7 +15,6 @@
     }
 }
 
-
 <div class="container">
     <div class="row mb-3 align-items-center my-3">
         <div class="col-md-6">
@@ -25,6 +24,134 @@
             <a href="/admin/movie/Create" class="btn btn-success">Create</a>
         </div>
     </div>
+    <!-- Filter Section -->
+    <section class="py-3 filter-bar">
+        <div class="container">
+            <div class="row" style="background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;">
+                <div class="col-12">
+                    <form class="row g-3 mb-3">
+                       
+                            <!-- Movies Name -->
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" placeholder="Movies Name" name="NameMovies" value="@ViewBag.NameMovies">
+                            </div>
+
+                            <!-- Price Range -->
+                            <div class="col-md-1">
+                                <input type="number" class="form-control" placeholder="Max Price" name="MaxPrice" value="@ViewBag.MaxPrice">
+                            </div>
+                            <div class="col-md-1">
+                                <input type="number" class="form-control" placeholder="Min Price" name="MinPrice" value="@ViewBag.MinPrice">
+                            </div>
+
+                            <!-- CategoryId -->
+                            <div class="col-md-2">
+                                <select name="CatogeryId" class="form-control">
+                                    <option value="0">--Category Name--</option>
+                                    @if (ViewBag.catogery is List<Category> categories)
+                                    {
+                                        @foreach (var item in categories)
+                                        {
+                                            if (ViewBag.catogeryId == item.Id)
+                                            {
+                                                <option value="@item.Id" selected>@item.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@item.Name</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <!-- CinemaId -->
+                            <div class="col-md-2">
+                                <select name="CinemaId" class="form-control">
+                                    <option value="0">--Cinema Name --</option>
+                                    @if (ViewBag.cinema is List<Cinema> cinemas)
+                                    {
+                                        @foreach (var item in cinemas)
+                                        {
+                                            if (ViewBag.cinemaId == item.Id)
+                                            {
+                                                <option value="@item.Id" selected>@item.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@item.Name</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                           
+                            
+                            @*  stutas *@
+                          @*   <div class="col-md-2">
+                        <select name="Stutas" class="form-control">
+                                    @if (ViewBag.stutas is not null)
+                                    {
+                                        <option value="true" selected>true</option>
+                                        <option value="fales">fales</option>
+
+                                    }
+                                    else
+                                    {
+                                        <option value="true">true</option>
+                                        <option value="fales" selected>fales</option>
+                                    }
+
+                                </select>
+                             </div>
+ *@
+                            <!-- Rating -->
+                             <div class="col-md-1">
+                                <select name="Stutas" class="form-control">
+                                    <option value="">stutas</option> 
+                                    <option>true</option> 
+                                     <option>fales</option> 
+                                     
+                                </select> 
+                            </div>
+                            <!-- actors id -->
+                            <div class="col-md-2">
+                                <select name="ActorId" class="form-control">
+                                    <option value="0">--actors Name --</option>
+                                    @if (ViewBag.actor is List<Actor> actors)
+                                    {
+                                        @foreach (var item in actors)
+                                        {
+                                            if (ViewBag.actorid == item.Id)
+                                            {
+                                                <option value="@item.Id" selected>@(item.FirstName + "" + item.LastName)</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@item.Id">@(item.FirstName + "" + item.LastName)</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+
+                            <!-- Hot Product Checkbox -->
+                         @*    <div class="col-md-1">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="Stutas" value="true" @(ViewBag.stutas ??
+                                           false ? "checked" : "")>
+                                    <label class="form-check-label">Hot</label>
+                                </div>
+                            </div> *@
+
+                            <!-- Submit Button -->
+                            <div class="cols-md-5">
+                                <button type="submit" class="btn btn-dark w-100">Filter</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <div class="row">
         <div class="col-12">
@@ -49,7 +176,15 @@
                             <th scope="row">@item.Id</th>
                             <td>@item.Name</td>
                             <td>@item.Price.ToString("c")</td>
-                            <td>@item.actorsMovies</td>
+                            <td>
+                                @foreach (var actorMovie in item.actorsMovies)
+                                {
+                                   
+                                    <span>@(actorMovie.Actor.FirstName +" "+ actorMovie.Actor.LastName)</span>
+
+                                    <br />
+                                }
+                            </td>
                             <td>@item.Category.Name</td>
                             <td>@item.Cinema.Name</td>
                             @if (item.Status)
@@ -71,6 +206,57 @@
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+   @*  pagination *@
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    @if (ViewBag.CurrenPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-MoviesName="@ViewBag.NameMovies"
+                               asp-route-MinPrice="@ViewBag.MinPrice"
+                               asp-route-MaxPrice="@ViewBag.MaxPrice "
+                               asp-route-CategoryId="@ViewBag.catogeryId"
+                               asp-route-CategoryId="@ViewBag.cinemaId"
+                               asp-route-stutas="@ViewBag.stutas"
+                               asp-route-page="@(ViewBag.CurrenPage-1)"
+                               })">Previous</a>
+                        </li>
+                    }
+                    @for (var i = 1; i <= ViewBag.TotallNumberOfPage; i++)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-MoviesName="@ViewBag.NameMovies"
+                               asp-route-MinPrice="@ViewBag.MinPrice"
+                               asp-route-MaxPrice="@ViewBag.MaxPrice "
+                               asp-route-CategoryId="@ViewBag.catogeryId"
+                               asp-route-CategoryId="@ViewBag.cinemaId"
+                               asp-route-stutas="@ViewBag.stutas"
+                               asp-route-page="ViewBag.CurrenPage"
+                               })">@i</a>
+                        </li>
+                    }
+                    @if (ViewBag.CurrenPage != ViewBag.TotallNumberOfPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-MoviesName="@ViewBag.NameMovies"
+                               asp-route-MinPrice="@ViewBag.MinPrice"
+                               asp-route-MaxPrice="@ViewBag.MaxPrice "
+                               asp-route-CategoryId="@ViewBag.catogeryId"
+                               asp-route-CategoryId="@ViewBag.cinemaId"
+                               asp-route-stutas="@ViewBag.stutas"
+                               asp-route-page="@(ViewBag.CurrenPage+1)"
+                               })">Next</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
         </div>
     </div>
 </div>

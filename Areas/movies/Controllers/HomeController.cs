@@ -16,15 +16,50 @@ public class HomeController : Controller
         _logger = logger;
     }
     private readonly ApplicationDbContext _dbContext = new();
-    public IActionResult Index()
+    public IActionResult Index(MoviesFilterVM moviesFilterVM , int page = 1)
    
     {
-        var movies = _dbContext.Movies.Include(e => e.Cinema).Include(e => e.Category).Include(e => e.Images);
-        if (movies is not null)
+        var movies = _dbContext.Movies.Include(e => e.Cinema).Include(e => e.Category).Include(e => e.Images).ToList();
+
+       //filters
+        if (moviesFilterVM.NmaneMovie is not null)
         {
-            return View(movies.ToList());
+            movies = movies.Where(e => e.Name.Contains(moviesFilterVM.NmaneMovie)).ToList();
+            ViewBag.NameMovies = moviesFilterVM.NmaneMovie;
         }
-        return RedirectToAction("NotFoundPage", "Home");
+        if (moviesFilterVM.MaxPrice is not null)
+        {
+            movies = movies.Where(e => e.Price <= moviesFilterVM.MaxPrice).ToList();
+            ViewBag.MaxPrice = moviesFilterVM.MaxPrice;
+        }
+        if (moviesFilterVM.Minprice is not null)
+        {
+            movies = movies.Where(e => e.Price >= moviesFilterVM.Minprice).ToList();
+            ViewBag.Minprice = moviesFilterVM.Minprice;
+        }
+        var cinema = _dbContext.Cinemas.ToList();
+        if (moviesFilterVM.CinemaId !=null)
+        {
+            if (moviesFilterVM.CinemaId > 0 && cinema.Count() >= moviesFilterVM.CinemaId)
+            {
+                movies = movies.Where(e => e.CinemaId == moviesFilterVM.CinemaId).ToList();
+                ViewBag.CineamId = moviesFilterVM.CinemaId;
+            }
+        }
+        //paginatio
+        if (page < 0)
+        {
+            page = 1;
+        }
+        var TotallNumberOfPage = Math.Ceiling(movies.Count() / 9.0);
+        movies = movies.Skip((page - 1) * 9).Take(9).ToList();
+        ViewBag.toallnumberofpage = TotallNumberOfPage;
+        ViewBag.currentPage = page;
+
+          ViewBag.cinema = cinema;
+            return View(movies);
+        
+       // return RedirectToAction("NotFoundPage", "Home");
     }
 
     public IActionResult Details(int Id)

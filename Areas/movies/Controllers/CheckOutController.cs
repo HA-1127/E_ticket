@@ -3,8 +3,8 @@ using E_ticket.Repostoris.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-
-using Stripe.BillingPortal;
+using Stripe.Checkout;
+//using Stripe.BillingPortal;
 using Stripe.Climate;
 using System.Threading.Tasks;
 
@@ -39,8 +39,8 @@ namespace E_ticket.Areas.movies.Controllers
             ticket.ticketStatus = TicketStatus.processing;
 
             var service = new SessionService();
-          //  var session = service.Get(ticket.SessionId);
-           // ticket.TransactionId = session.PaymentIntentId;
+            var session = service.Get(ticket.SessionId);
+           ticket.TransactionId =session.PaymentIntentId;
             // movise => ticket
             var user =await _userManager.GetUserAsync(User);
             if (user is not null)

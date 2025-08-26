@@ -1,0 +1,24 @@
+﻿@using E_ticket.Models.viewmodel
+@model UserOrRoleVM
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>User Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@(Model.FullName)</h4>
+        <p><strong>ID:</strong> @Model.Id</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>UserName:</strong> @Model.UserName</p>
+        <p><strong>locked:</strong> @Model.islocked</p>
+
+
+        <p><strong>Roles:</strong>@(string.Join(" , ", Model.Roles))</p>
+
+
+        <a href="/admin/User/Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

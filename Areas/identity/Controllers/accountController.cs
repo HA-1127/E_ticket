@@ -1,6 +1,7 @@
 ﻿using E_ticket.Models;
 using E_ticket.Models.viewmodel;
 using E_ticket.Repostoris.IRepository;
+using E_ticket.utiltiy;
 using Mapster;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -49,13 +50,13 @@ namespace E_ticket.Areas.identity.Controllers
             var resualt = await _userManager.CreateAsync(applicationUser, registervm.Password);
             if (resualt.Succeeded)
             {
-                //send email
-                var token = _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
-                var link = Url.Action(nameof(ConfirmEmail), "account", new { area = "identity"
-                    , token = token, userid = applicationUser.Id }, Request.Scheme);
-                await _emailSender.SendEmailAsync(registervm.Email,
-                "Confirm Your Account", $"<h1>Confirm Your Account By Clicking <a href={link}>Here</a></h1>");
+                // Send Email
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
+                var link = Url.Action(nameof(ConfirmEmail), "Account", new { area = "Identity", token = token, userId = applicationUser.Id }, Request.Scheme);
+                await _emailSender.SendEmailAsync(registervm.Email, "Confirm Your Account", $"<h1>Confirm Your Account By Clicking <a href='{link}'>Here</a></h1>");
 
+
+                await _userManager.AddToRoleAsync(applicationUser, SD.Customer);
                 //send massge
                 TempData["successfull notification"] = "succssefull add create account ,Confirm Your Account!";
                 return RedirectToAction(nameof(Index), "Home", new { area = "movies" });
@@ -69,6 +70,41 @@ namespace E_ticket.Areas.identity.Controllers
             return View(registervm);
 
 
+        }
+        public IActionResult RegisterAdmin()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> RegisterAdmin(Registervm registerAdminvm)
+        {
+            ApplicationUser applicationUser = new()
+            {
+                FirstName = registerAdminvm.FirstName,
+                LastName = registerAdminvm.LastName,
+                Email = registerAdminvm.Email,
+                Address = registerAdminvm.Address,
+                UserName = registerAdminvm.UserName
+
+            };
+           // ApplicationUser applicationUser = registerAdminvm.Adapt<ApplicationUser>();
+          var resualt=await  _userManager.CreateAsync(applicationUser, registerAdminvm.Password);
+            if (resualt.Succeeded)
+            {
+               await _userManager.AddToRoleAsync(applicationUser, SD.Admin);
+              await  _signInManager.SignInAsync(applicationUser, false);
+                //send massge
+                TempData["successfull notification"] = "succssefull add create account Admin";
+                return RedirectToAction(nameof(Index), "Home", new { area = "movies" });
+
+            }
+            foreach (var item in resualt.Errors)
+            {
+                ModelState.AddModelError(string.Empty, item.Description);
+                return View(registerAdminvm);
+            }
+            // TempData["successfull notification"] = string.Join(" ", resualt.Errors.Select(e => e.Description));
+            return View(registerAdminvm);
         }
         public async Task<IActionResult> ConfirmEmail(string userid, string token)
         {
@@ -86,6 +122,8 @@ namespace E_ticket.Areas.identity.Controllers
             }
             return NotFound();
         }
+
+
         public IActionResult Login()
         {
             return View();
@@ -98,21 +136,23 @@ namespace E_ticket.Areas.identity.Controllers
             if (user is not null)
             {
                 var resualt = await _signInManager.PasswordSignInAsync(user.UserName !, loginvm.Password, loginvm.Remmeberme, lockoutOnFailure: true);
-                if (resualt.Succeeded)
-                {
-                    TempData["successfull notification"] = "succsefull login ";
-                    return RedirectToAction(nameof(Index), "Home", new { area = "movies" });
-                }
                 if (resualt.IsLockedOut)
                 {
                     ModelState.AddModelError(string.Empty, "the lockout ");
                     return View(loginvm);
                 }
-                if (!user.EmailConfirmed)
+                if (resualt.Succeeded)
                 {
-                    ModelState.AddModelError(string.Empty, "confirm your accont ");
-                    return View(loginvm);
+                    if (!user.EmailConfirmed)
+                    {
+                        ModelState.AddModelError(string.Empty, "confirm your accont ");
+                        return View(loginvm);
+                    }
+                    TempData["successfull notification"] = "succsefull login ";
+                    return RedirectToAction(nameof(Index), "Home", new { area = "movies" });
                 }
+              
+              
             }
             ModelState.AddModelError(string.Empty, "Invalid User Name Or Password");
             return View(loginvm);

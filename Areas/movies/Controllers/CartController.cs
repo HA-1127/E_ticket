@@ -1,13 +1,17 @@
-﻿using E_ticket.Models;
+﻿using E_ticket.data;
+using E_ticket.Models;
 using E_ticket.Repostoris;
 using E_ticket.Repostoris.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Stripe.Checkout;
 using System.Threading.Tasks;
 
 namespace E_ticket.Areas.movies.Controllers
 {
+    [Authorize]
     [Area("movies")]
     public class CartController : Controller
     {
@@ -15,19 +19,22 @@ namespace E_ticket.Areas.movies.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly Imovierepository _movierepository;
         private readonly ITicketRepository _ticketRepository;
+        private readonly ApplicationDbContext _context;
 
         public CartController(IMoviesUserTicketRepositiriy moviesUserTicketRepositiriy,
             UserManager<ApplicationUser> userManager , Imovierepository movierepository,
-            ITicketRepository ticketRepository )
+            ITicketRepository ticketRepository,
+            ApplicationDbContext context)
         {
             _moviesUserTicketRepositiriy = moviesUserTicketRepositiriy;
             _userManager = userManager;
             _movierepository = movierepository;
             _ticketRepository = ticketRepository;
+            _context = context;
         }
         public async Task<IActionResult> AddToCart(int moviesid ,int count)
         {
-            var user = _userManager.GetUserAsync(User);
+            var user =await _userManager.GetUserAsync(User);
             if (user is null)
             {
                 return NotFound();
@@ -55,12 +62,13 @@ namespace E_ticket.Areas.movies.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var user = _userManager.GetUserAsync(User);
+            var user =await _userManager.GetUserAsync(User);
             if (user is null)
             {
                 return NotFound();
             }
-            var Movisetiket = await _moviesUserTicketRepositiriy.GetAsync(e => e.ApplicationUserId == user.Id.ToString(), includes: [e=>e.movie]);
+            // var Movisetiket = await _moviesUserTicketRepositiriy.GetAsync(e => e.ApplicationUserId == user.Id.ToString(), includes: [e=>e.movie]);
+            var Movisetiket = _context.moviesUserTickets.Where(e => e.ApplicationUserId == user.Id).Include(e => e.movie).ThenInclude(e => e.Images).ToList();
             ViewBag.totalPrice = Movisetiket.Sum(e => e.movie.Price * e.Count);
 
             return View(Movisetiket);
@@ -68,7 +76,7 @@ namespace E_ticket.Areas.movies.Controllers
         public async Task<IActionResult> InceremantCount( int moviesid)
 
         {
-            var user = _userManager.GetUserAsync(User);
+            var user =await _userManager.GetUserAsync(User);
             if (user is null)
             {
                 return NotFound();
@@ -81,11 +89,11 @@ namespace E_ticket.Areas.movies.Controllers
             ticketdb.Count++;
             
           await  _moviesUserTicketRepositiriy.CommitAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Cart");
         }
         public async Task<IActionResult> DecremantCount(int moviesid)
         {
-            var user = _userManager.GetUserAsync(User);
+            var user =await _userManager.GetUserAsync(User);
             if (user is null)
             {
                 return NotFound();
@@ -100,11 +108,11 @@ namespace E_ticket.Areas.movies.Controllers
                 await _moviesUserTicketRepositiriy.CommitAsync();
             }
          
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Cart");
         }
         public async Task<IActionResult> DeleteMovies(int moviesid)
         {
-            var user = _userManager.GetUserAsync(User);
+            var user =await _userManager.GetUserAsync(User);
             if (user is null)
             {
                 return NotFound();
@@ -121,35 +129,39 @@ namespace E_ticket.Areas.movies.Controllers
 
         public async Task<IActionResult> Pay()
         {
-            var user = _userManager.GetUserAsync(User);
+            var user =await _userManager.GetUserAsync(User);
             if (user is null)
             {
                 return NotFound();
             }
-            var moviesticket =await _moviesUserTicketRepositiriy.GetAsync(e => e.ApplicationUserId == user.Id.ToString(), includes: [e=>e.movie]);
-            
-            await _ticketRepository.CreateAsync(new()
-            { IdApplicationUser = user.Id,
+            var moviesticket =await _moviesUserTicketRepositiriy.GetAsync(e => e.ApplicationUserId == user.Id,
+                includes: [e=>e.movie]);
+     
+             await _ticketRepository.CreateAsync(new()
+            { 
+               ApplicationUserId =user.Id,
                 ticketStatus = TicketStatus.pending,
                 DateTime = DateTime.UtcNow,
                 paymenMethod = PaymenMethod.Vias,
+                TotalPrice = moviesticket.Sum(e=>e.movie.Price * e.Count)
+                
 
             });
-           await _ticketRepository.CommitAsync();
-            var ticket = (await _ticketRepository.GetAsync(e => e.IdApplicationUser == user.Id)).OrderBy(e => e.Id).LastOrDefault();
+          await _ticketRepository.CommitAsync();
+            var ticket = (await _ticketRepository.GetAsync(e=>e.ApplicationUserId == user.Id ))
+                .OrderBy(e => e.Id).LastOrDefault();
     
             if (ticket is null)
             {
                 return NotFound();
             }
-
             var options = new SessionCreateOptions
             {
                 PaymentMethodTypes = new List<string> { "card" },
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
-                SuccessUrl = $"{Request.Scheme}://{Request.Host}/Customer/CheckOut/Success?TicketId={ticket.Id}",
-                CancelUrl = $"{Request.Scheme}://{Request.Host}/Customer/CheckOut/Cancel?TicketId={ticket.Id}",
+                SuccessUrl = $"{Request.Scheme}://{Request.Host}/movies/CheckOut/Success?TicketId={ticket.Id}",
+                CancelUrl = $"{Request.Scheme}://{Request.Host}/movies/CheckOut/Cancel?TicketId={ticket.Id}",
             };
 
             foreach (var item in moviesticket)
@@ -173,7 +185,7 @@ namespace E_ticket.Areas.movies.Controllers
 
             var service = new SessionService();
             var session = service.Create(options);
-           // ticket.SessionId = session.Id;
+            ticket.SessionId = session.Id;
            await _ticketRepository.CommitAsync();
             
             return Redirect(session.Url);

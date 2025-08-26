@@ -1,0 +1,29 @@
+﻿@model Ticket
+@{
+    ViewData["Title"] = "Details";
+}
+
+
+<h2>ticket Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <p><strong>Full Name :</strong> @(Model.applicationUser.FirstName + " " + Model.applicationUser.LastName)</p>
+        <p><strong>User Name :</strong> @Model.applicationUser.UserName</p>
+
+        <p><strong>Date :</strong> @Model.DateTime</p>
+        <p><strong>Pay ment:</strong> @Model.paymenMethod</p>
+        <p><strong>Status:</strong> @Model.ticketStatus</p>
+        <p><strong>Total Price:</strong> @Model.TotalPrice</p>
+
+
+        <a href="/Admin/Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+
+
+
+
+
+

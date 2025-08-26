@@ -33,7 +33,8 @@ namespace E_ticket.Repostoris
             _db.Remove(entity);
         }
 
-        public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>>? filter = null, Expression<Func<T, object>>[]? includes = null, bool tracked = true)
+        public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>>? filter = null,
+            Expression<Func<T, object>>[]? includes = null, bool tracked = true)
         {
             var entities = _db.AsQueryable<T>();
 

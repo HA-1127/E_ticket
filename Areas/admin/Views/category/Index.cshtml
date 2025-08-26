@@ -16,6 +16,7 @@
 }
 
 
+
 <div class="container">
     <div class="row mb-3 align-items-center my-3">
         <div class="col-md-6">
@@ -24,8 +25,29 @@
         <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
             <a href="/admin/category/Create" class="btn btn-success">Create</a>
         </div>
-    </div>
+        <!-- Filter Section -->
+        <section class="py-3 filter-bar">
+            <div class="container">
+                <div class="row" style="background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;">
+                    <div class="col-12">
+                        <form>
+                            <div class="row">
+                                <!-- Product Name -->
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" placeholder="catogery Name" name="CatogeryName" value="@ViewBag.catogeryName ">
+                                </div>
 
+                                <!-- Submit Button -->
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-dark w-100">Filter</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+   
     <div class="row">
         <div class="col-12">
 
@@ -58,6 +80,43 @@
             </table>
         </div>
     </div>
+        @*  pagination  *@
+        <div class="row">
+            <div class="col-12 d-flex justify-content-center">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-catogeryName="@ViewBag.catogeryName  "
+                                   asp-route-page="@(ViewBag.CurrentPage-1)"
+                                   })">Previous</a>
+                            </li>
+                        }
+                        @for (var i = 1; i <= ViewBag.TotallNumberOfPage; i++)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new {
+                                 catogerName =  ViewBag.catogeryName  ,
+
+                                page = i
+                                })">@i</a>
+                            </li>
+                        }
+                        @if (ViewBag.CurrentPage != ViewBag.TotallNumberOfPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" asp-action="Index"
+                                   asp-route-catogeryName="@ViewBag.catogeryName "
+                                   asp-route-page="@(ViewBag.CurrentPage+1)"
+                                   })">Nexte</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
 </div>
 
 <script>

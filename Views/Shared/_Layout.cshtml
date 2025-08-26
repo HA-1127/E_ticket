@@ -17,7 +17,7 @@
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">E_ticket</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -30,21 +30,34 @@
                         </li>
                     </ul>
                 </div>
-                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="identity" asp-controller="account" asp-action="Register">Register</a>
-                       
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="identity" asp-controller="account" asp-action="Login">Login</a>
+                            @if(User is not null&& User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="identity" asp-controller="account" asp-action="Logout">Logout</a> </li>
+                                <li class="nav-item"><a class="nav-link text-dark" >Wellcon @User.Identity.Name </a></li>
+
+
+                            }
+                            else
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="identity" asp-controller="account" asp-action="Register">Register</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="identity" asp-controller="account" asp-action="Login">Login</a></li>
+
+                            }
+                            @if(User.IsInRole("SuperAdmin"))
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="identity" asp-controller="account" asp-action="RegisterAdmin">Register Admin</a></li>
+                                
+                            }
+
                             <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="identity" asp-controller="account" asp-action="Logout">Logout</a>
-                            <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="movies" asp-controller="Home" asp-action="Privacy"></a>
+                            <a class="nav-link text-dark" asp-area="movies" asp-controller="Home" asp-action="Privacy"></a> </li>
                         </li>
                     </ul>
                     
-                     <a href="/movies/Cart" class="btn btn-outline-dark" type="submit">
+                     <a href="/movies/Cart/Index" class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Ticket
                         <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>

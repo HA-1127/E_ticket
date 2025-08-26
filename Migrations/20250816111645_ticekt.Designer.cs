@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_ticket.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250720085638_ticket")]
-    partial class ticket
+    [Migration("20250816111645_ticekt")]
+    partial class ticekt
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -290,11 +290,15 @@ namespace E_ticket.Migrations
 
             modelBuilder.Entity("E_ticket.Models.Ticket", b =>
                 {
-                    b.Property<int>("IdApplicationUser")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdApplicationUser"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("Carrier")
                         .HasColumnType("int");
@@ -305,20 +309,14 @@ namespace E_ticket.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SessionId")
-                        .HasColumnType("int");
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("TotalPrice")
                         .HasColumnType("float");
 
-                    b.Property<int?>("TransactionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("applicationuserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("TransactionId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("paymenMethod")
                         .HasColumnType("int");
@@ -326,9 +324,9 @@ namespace E_ticket.Migrations
                     b.Property<int>("ticketStatus")
                         .HasColumnType("int");
 
-                    b.HasKey("IdApplicationUser");
+                    b.HasKey("Id");
 
-                    b.HasIndex("applicationuserId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("tickets");
                 });
@@ -590,11 +588,13 @@ namespace E_ticket.Migrations
 
             modelBuilder.Entity("E_ticket.Models.Ticket", b =>
                 {
-                    b.HasOne("E_ticket.Models.ApplicationUser", "applicationuser")
+                    b.HasOne("E_ticket.Models.ApplicationUser", "applicationUser")
                         .WithMany()
-                        .HasForeignKey("applicationuserId");
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("applicationuser");
+                    b.Navigation("applicationUser");
                 });
 
             modelBuilder.Entity("E_ticket.Models.TicketItme", b =>

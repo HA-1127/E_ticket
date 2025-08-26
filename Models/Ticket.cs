@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using E_ticket.Areas.admin.Controllers;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace E_ticket.Models
 {
@@ -10,21 +13,27 @@ namespace E_ticket.Models
      completed,
      canceled,
      refunded,
+     Booked
     }
     public enum PaymenMethod
     {
         Vias,
         Cash
     }
-    [PrimaryKey(nameof(IdApplicationUser))]
+
+ 
     public class Ticket
     {
+       
         public int Id { get; set; }
-        public int IdApplicationUser { get; set; }
-      public ApplicationUser applicationuser { get; set; }
+
+        public string ApplicationUserId { get; set; } = null!;
+
+        public ApplicationUser? applicationUser { get; set; }
+
         public DateTime DateTime { get; set; }
-        public int? SessionId { get; set; }
-        public int? TransactionId { get; set; }
+        public string? SessionId { get; set; }
+        public string? TransactionId { get; set; }
         public int? Carrier { get; set; }
         public int? CarrierId { get; set; }
         public double TotalPrice { get; set; }

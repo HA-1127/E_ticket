@@ -16,6 +16,59 @@
     }
 }
 
+<!-- Filter Section -->
+<section class="py-3 filter-bar">
+    <div class="container">
+        <div class="row" style="background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;">
+            <div class="col-12">
+                <form>
+                    <div class="row">
+                        <!-- movies Name -->
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" placeholder="Movie Name" name="NmaneMovie" value="@ViewBag.NameMovies">
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="col-md-2">
+                            <input type="number" class="form-control" placeholder="Min Price" name="Minprice" value="@ViewBag.Minprice">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" class="form-control" placeholder="Max Price" name="MaxPrice" value="@ViewBag.MaxPrice">
+                        </div>
+
+                        <!-- cinema -->
+                        <div class="col-md-2">
+                            <select name="CinemaId" class="form-control">
+                                <option value="0">--Select cinema--</option>
+                                @if ( ViewBag.cinema is List<Cinema> cinemas)
+                                {
+                                    @foreach (var item in cinemas)
+                                    {
+                                        if (ViewBag.CineamId == item.Id)
+                                        {
+                                            <option value="@item.Id" selected>@item.Name</option>
+                                        }else
+                                        {
+                                            <option value="@item.Id">@item.Name</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        
+
+                        <!-- Submit Button -->
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-dark w-100">Filter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div class="container">
    
     <div class="row">
@@ -32,13 +85,68 @@
                             <p class="card-text"> Categery :@item.Category.Name</p>
                             <p class="card-text"> Cinema :@item.Cinema.Name</p>
                             <p class="card-text"> Date :@item.StartDate</p>
-                              
-
+                            <p class="card-text"> price :@item.Price.ToString("c")</p>
+                         
                             <a asp-area="movies" asp-controller="home" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
                         </div>
                     </div>
                 </div>
             }
+            @* //pagination *@
+     <div class="row">
+         <div class="col-12 d-flex justify-content-center">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            @if (ViewBag.currentPage  > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index"
+                                       asp-route-moviesName="@ViewBag.NameMovies"
+                                       asp-route-MinPrice="@ViewBag.Minprice"
+                                       asp-route-MaxPrice="@ViewBag.MaxPrice"
+                                       asp-route-CategoryId="@ViewBag.CineamId"
+                                     
+                                       asp-route-page="@(ViewBag.currentPage-1)"
+                                       })">Previous</a>
+                                </li>
+                            }
+                            @for (var i = 1; i <=   ViewBag.toallnumberofpage; i++)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", new {
+                                 moviesName = ViewBag.NameMovies,
+                                MinPrice = ViewBag.Minprice,
+                                MaxPeice = ViewBag.MaxPrice ,
+                                cinema =ViewBag.CineamId,
+                                page = i
+                                })">@i</a>
+                                </li>
+                            }
+                            @if (ViewBag.currentPage != ViewBag.toallnumberofpage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index"
+                                    asp-route-moviesName="@ViewBag.NameMovies"
+                                    asp-route-MinPrice="@ViewBag.Minprice" 
+                                    asp-route-MaxPrice="@ViewBag.MaxPrice" 
+                                    asp-route-CategoryId="@ViewBag.CineamId" 
+                                       asp-route-page="@(ViewBag.currentPage+1)"
+                                       })">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
         }
+
+     else
+      {
+            <div class="row">
+                <div class="col-12 d-flex justify-content-center">
+                    <div class="display-3">No Items!!</div>
+                </div>
+            </div>
+      }
     </div>
 </div>
